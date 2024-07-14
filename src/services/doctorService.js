@@ -1,6 +1,9 @@
 import db from "../models/index";
 require('dotenv').config();
 import _ from 'lodash';
+import moment from 'moment';
+//const date = require('date-and-time')
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
 let getTopDoctorHomeService = (limitInput) => {
     return new Promise(async (resolve, reject) => {
@@ -145,6 +148,8 @@ let getDetailDoctorByIdService = (doctorId) => {
 let bulkCreateScheduleService = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
+            console.log('>>>>>>>>>> check gia tri data: ', data);
+            //resolve(data);
             if (!data.arrSchedule) {
                 resolve({
                     errCode: 1,
@@ -159,7 +164,31 @@ let bulkCreateScheduleService = (data) => {
                     })
                 }
                 console.log('hoi dan it channel: data send:', schedule);
-                await db.Schedule.bulkCreate(schedule);
+                let existing = await db.Schedule.findAll(
+                    {
+                        where: { doctorId: data.doctorId, date: data.date },
+                        attributes: ['timeType', 'date', 'doctorId', 'maxNumber'],
+
+                    }
+                );
+                //compare difference between two object
+                let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+                    return a.timeType === b.timeType && a.date === b.date;
+                })
+                // let findedDate = existing.date;
+                // console.log('gia tri date:', date.Date());
+                // console.log('gia tri findedDate 1', moment().format(findedDate));
+                // console.log('gia tri findedDate 2:', moment(findedDate).unix());
+                //  let toCreate = _.differenceBy(schedule, existing, ['timeType', 'date']);
+                console.log('>>>>>>>>>> gia tri schedule:', schedule);
+                console.log('>>>>>>>>>> gia tri existing:', existing);
+                if (toCreate && toCreate.length > 0) {
+                    await db.Schedule.bulkCreate(toCreate);
+                    console.log('>>>>>>>>> the difference between two object:', toCreate);
+                }
+                console.log('>>>>>>>>>> gia tri toCreate:', toCreate);
+                //  await db.Schedule.bulkCreate(schedule);
+
                 resolve({
                     errCode: 0,
                     errMessage: 'OK'

@@ -60,7 +60,7 @@ let getDetailDoctorById = async (req, res) => {
 
 let bulkCreateSchedule = async (req, res) => {
     try {
-        console.log('>>>>> gia tri cua req: ', req.query.id)
+        console.log('>>>>> gia tri cua req body: ', req)
         let infor = await doctorService.bulkCreateScheduleService(req.body);
         return res.status(200).json(infor)
 
