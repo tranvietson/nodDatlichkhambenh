@@ -1,6 +1,6 @@
 import db from "../models/index";
 require('dotenv').config();
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 import moment from 'moment';
 //const date = require('date-and-time')
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -200,10 +200,39 @@ let bulkCreateScheduleService = (data) => {
         }
     })
 }
+
+let getScheduleDoctorByDateService = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log('gia tri doctorId and date:', doctorId, date);
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters'
+                })
+            } else {
+                let dataSchedule = await db.Schedule.findAll({
+                    where: {
+                        doctorId: doctorId,
+                        date: date
+                    }
+                })
+                if (!dataSchedule) dataSchedule = [];
+                resolve({
+                    errCode: 0,
+                    data: dataSchedule
+                })
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
 module.exports = {
     getTopDoctorHomeService: getTopDoctorHomeService,
     getAllDoctorsService: getAllDoctorsService,
     saveDetailInforDortorService: saveDetailInforDortorService,
     getDetailDoctorByIdService: getDetailDoctorByIdService,
-    bulkCreateScheduleService: bulkCreateScheduleService
+    bulkCreateScheduleService: bulkCreateScheduleService,
+    getScheduleDoctorByDateService: getScheduleDoctorByDateService
 }
