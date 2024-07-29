@@ -185,14 +185,21 @@ let bulkCreateScheduleService = (data) => {
                 if (toCreate && toCreate.length > 0) {
                     await db.Schedule.bulkCreate(toCreate);
                     console.log('>>>>>>>>> the difference between two object:', toCreate);
+                    resolve({
+                        errCode: 0,
+                        errMessage: 'OK'
+                    });
+                } else {
+
+                    resolve({
+                        errCode: 1,
+                        errMessage: 'Doctor Schedule  existed'
+                    });
                 }
                 console.log('>>>>>>>>>> gia tri toCreate:', toCreate);
                 //  await db.Schedule.bulkCreate(schedule);
 
-                resolve({
-                    errCode: 0,
-                    errMessage: 'OK'
-                });
+
             }
 
         } catch (e) {
