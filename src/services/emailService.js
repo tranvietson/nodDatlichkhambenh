@@ -23,28 +23,49 @@ let sendSimpleEmail = async (dataSend) => {
         subject: "Thông tin đặt lịch khám bệnh", // Subject line
         // text: "Hello world?", // plain text body
         // html: "<b>Hello world?</b>", // html body
-        html: `
-       <h3>Xin chào ${dataSend.patientName}!</h3>
-       <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên Hỏi Dân It channel. </p>
-       <p>Thông tin đặt lịch khám bênh:</p>
-        <div><b>Thời gian: ${dataSend.time}</b></div>
-        <div><b>Bác sĩ:${dataSend.doctorName}</b></div>
+        html: getBodyHTMLEmail(dataSend),
+    });
+}
+
+let getBodyHTMLEmail = (dataSend) => {
+    let result = '';
+    if (dataSend.language === 'vi') {
+        result = ` <h3>Xin chào ${dataSend.patientName}!</h3>
+        <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online trên Hỏi Dân It channel. </p>
+        <p>Thông tin đặt lịch khám bênh:</p>
+         <div><b>Thời gian: ${dataSend.time}</b></div>
+         <div><b>Bác sĩ:${dataSend.doctorName}</b></div>
+ 
+         <p>
+         Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường link bên dưới 
+         để xác nhận và hoàn tất thủ tục đặt lịch khám.
+         </p>
+         <div>
+             <a href=${dataSend.redirectLink} target="_blank">Click here</a>
+         </div>
+         <div>Xin chân thành cảm ơn!</div>
+        `
+    }
+
+    if (dataSend.language === 'en') {
+        result = `<h3>Dear ${dataSend.patientName}!</h3>
+       <p>You received this email because you made an appointment online on the Ask Dan It channel. </p>
+       <p>Medical appointment information:</p>
+        <div><b>Time: ${dataSend.time}</b></div>
+        <div><b>Doctor:${dataSend.doctorName}</b></div>
 
         <p>
-        Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường link bên dưới 
-        để xác nhận và hoàn tất thủ tục đặt lịch khám.
+        If the above information is correct, please click on the link below to confirm and complete the appointment booking process.
         </p>
         <div>
             <a href=${dataSend.redirectLink} target="_blank">Click here</a>
         </div>
-        <div>Xin chân thành cảm ơn!</div>
+        <div>Thanks so much!</div>
        `
-    });
+    }
 
-
+    return result;
 }
-
-
 
 
 module.exports = {
